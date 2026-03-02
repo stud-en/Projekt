@@ -5,13 +5,13 @@ This is a template repository.
 Get started by reading [docs/setup.md](docs/setup.md).
 See [docs/overview.md](docs/overview.md) for an overview of the base module content.
 
-## Template for a project
+## Template for a project 
 
 ### Step 1: Define Your Simulation (Before Any Code)
+I am making a simulation for train operator timetabling. 
 
-Use this template to describe your project. Think about these four components and the messages they send between each other:
 
-### My Smart City Project: [Project Name]
+### My Smart City Project: Crew timetables and train operators 
 
 #### 1. The Trigger (Who/What is moving?)
 Describe the **Agents** (Humans, Animals, Vehicles) and the **Surroundings** (Weather, Time).
