@@ -8,26 +8,30 @@ See [docs/overview.md](docs/overview.md) for an overview of the base module cont
 ## Template for a project 
 
 ### Step 1: Define Your Simulation (Before Any Code)
-I am making a simulation for train operator timetabling. 
+This project is a simplified simulation model of train operator timetabling in Denmark. The geographical scope is limited to intercity rail services on the island of Zealand. The purpose of the simulation is to model how a single train operator moves along predefined train routes during the day while maintaining a closed circulation pattern — meaning the operator must end the simulation at the same station where they began.
+
+The rail network is represented as a map of Zealand with selected intercity routes drawn as red lines. Stations along these routes are defined as discrete nodes. The operator is represented as a movable marker that travels between stations along these predefined paths.
+
+In this model, one train trip is defined as a single movement from one station to the next adjacent station along a route. A full simulation consists of a configurable number (x) of consecutive train trips. The operator moves stepwise between stations according to the route structure, without considering infrastructure capacity, delays, or crew regulation constraints. Running times are assumed fixed and are not dynamically calculated.
+
+The central constraint of the simulation is circulation closure: the sequence of station-to-station movements must be constructed so that after completing x trips, the operator returns to the original starting station. This reflects a fundamental principle in real-world operator and rolling stock planning, where daily diagrams typically begin and end at the same depot or base location.
+
+The objective of the project is therefore not to optimize infrastructure usage, but to visualize and test operator circulation patterns on a simplified intercity network. The simulation demonstrates how sequential train movements can be structured into a closed operational loop within a fixed geographic system.
 
 
 ### My Smart City Project: Crew timetables and train operators 
 
 #### 1. The Trigger (Who/What is moving?)
-Describe the **Agents** (Humans, Animals, Vehicles) and the **Surroundings** (Weather, Time).
-*Example: A citizen drops a pizza box into the smart-bin.*
+The agent in the simulation is a single train operator, represented as a movable marker on a map. The vehicle context is an intercity train operating on predefined routes across Zealand, Denmark. The surroundings consist of a simplified rail network map where stations are fixed nodes and train lines are predefined paths drawn in red. Time progresses in discrete steps, where each step represents one train trip — defined as a movement from one station to the next adjacent station along a route. The trigger event is the operator beginning a trip from a station and moving toward the next station in sequence.
 
 #### 2. The Observer (What does the city see?)
-What **Sensor** picks up the information? 
-*Example: An infrared sensor inside the bin detects the height of the trash.*
+The observer is the simulation system itself. It tracks the operator’s current station, the available connected stations along the selected intercity route, and the number of completed trips. The system continuously monitors three state variables: current position, trip counter, and starting position. It detects each completed movement from one station node to the next and updates the operator’s location accordingly.
 
 #### 3. The Control Center (The Logic)
-How does the city "think" about this information?
-*Example: If the trash height is more than 80%, send a signal to the garbage department.*
+The control logic governs how the operator moves through the network. At each step, the system determines the next valid adjacent station along the predefined route. It increments the trip counter and updates the current position. The central constraint is circulation closure: after x trips, the operator must return to the original starting station. The logic therefore either selects a route sequence that naturally forms a closed loop or ensures that the final segment directs the operator back to the starting node. The system checks whether the trip count has reached x and whether the current station equals the starting station.
 
 #### 4. The Response (What happens next?)
-What is the **Controller** that changes the city?
-*Example: A digital map in the garbage truck updates to show a "High Priority" pickup.*
+If the trip counter is below x, the operator marker moves to the next station along the red route line. The map visually updates to show this movement. When the operator completes x trips and arrives back at the starting station, the simulation cycle ends successfully. The result is a closed operational loop where the operator begins and ends at the same location, demonstrating a simplified model of daily circulation planning for an intercity operator on Zealand.
 
 ---
 
