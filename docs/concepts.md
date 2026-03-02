@@ -73,6 +73,31 @@ Planned graph edge set for MVP route validation:
 - `Naestved <-> Nykobing_F`
 - `Ringsted <-> Odense` (only when optional extension is enabled)
 
+### Sample closed loop sequences
+
+These examples are planning references for the closure rule. Each sequence starts and ends at the same station.
+
+#### Loop A (short, 4 trips)
+- `Kobenhavn_H -> Roskilde -> Kobenhavn_H -> CPH_Lufthavn -> Kobenhavn_H`
+- Trip count: `4`
+- Closure result: valid (`start_station == end_station`)
+
+#### Loop B (medium, 6 trips)
+- `Kobenhavn_H -> Roskilde -> Ringsted -> Roskilde -> Kalundborg -> Roskilde -> Kobenhavn_H`
+- Trip count: `6`
+- Closure result: valid (`start_station == end_station`)
+
+#### Loop C (long, 8 trips)
+- `Kobenhavn_H -> Roskilde -> Ringsted -> Naestved -> Ringsted -> Roskilde -> Kobenhavn_H -> Helsingor -> Kobenhavn_H`
+- Trip count: `8`
+- Closure result: valid (`start_station == end_station`)
+
+#### Optional extension loop (10 trips, includes Odense)
+- `Kobenhavn_H -> Roskilde -> Ringsted -> Odense -> Ringsted -> Naestved -> Nykobing_F -> Naestved -> Ringsted -> Roskilde -> Kobenhavn_H`
+- Trip count: `10`
+- Closure result: valid (`start_station == end_station`)
+- Use only when `simulation.allow_optional_extension` is `true`.
+
 ## 2. MQTT Architecture
 
 Topic names are relative to `base_topic` from configuration (default: `simulated-city`).
