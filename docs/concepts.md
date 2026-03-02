@@ -30,6 +30,49 @@ This document defines the architecture before implementation. It translates the 
   - `completed_trips == x`
   - `current_station == start_station`
 
+### Geographic and route context
+- The geographic scope is Zealand intercity rail links with one optional bridge connection toward Odense.
+- The topology should be modeled as a graph of station nodes with explicit bidirectional edges.
+- Based on the provided route sketch, the core station set is:
+  - `Helsingor`
+  - `Kobenhavn_H`
+  - `CPH_Lufthavn`
+  - `Roskilde`
+  - `Ringsted`
+  - `Slagelse`
+  - `Kalundborg`
+  - `Naestved`
+  - `Nykobing_F`
+  - `Odense` (optional extension)
+- Core line intent from the sketch:
+  - north-south branch from `Kobenhavn_H` to `Helsingor`
+  - east-west trunk from `Kobenhavn_H` through `Roskilde` toward `Kalundborg`
+  - airport branch from `Kobenhavn_H` to `CPH_Lufthavn`
+  - southwest trunk through `Ringsted` and `Naestved` to `Nykobing_F`
+
+### Route assumptions table (planning baseline)
+
+| Line ID | From | To | Segment role | Bidirectional |
+|---|---|---|---|---|
+| `L1` | `Kobenhavn_H` | `Helsingor` | North branch | yes |
+| `L2` | `Kobenhavn_H` | `Roskilde` | West trunk (inner) | yes |
+| `L3` | `Roskilde` | `Kalundborg` | West trunk (outer) | yes |
+| `L4` | `Kobenhavn_H` | `CPH_Lufthavn` | Airport branch | yes |
+| `L5` | `Roskilde` | `Ringsted` | South trunk (inner) | yes |
+| `L6` | `Ringsted` | `Naestved` | South trunk (middle) | yes |
+| `L7` | `Naestved` | `Nykobing_F` | South trunk (outer) | yes |
+| `L8` | `Ringsted` | `Odense` | Optional extension | yes |
+
+Planned graph edge set for MVP route validation:
+- `Kobenhavn_H <-> Helsingor`
+- `Kobenhavn_H <-> Roskilde`
+- `Roskilde <-> Kalundborg`
+- `Kobenhavn_H <-> CPH_Lufthavn`
+- `Roskilde <-> Ringsted`
+- `Ringsted <-> Naestved`
+- `Naestved <-> Nykobing_F`
+- `Ringsted <-> Odense` (only when optional extension is enabled)
+
 ## 2. MQTT Architecture
 
 Topic names are relative to `base_topic` from configuration (default: `simulated-city`).
@@ -131,13 +174,23 @@ All runtime parameters should be stored in `config.yaml` and loaded through `sim
 ### Network and map data (Zealand)
 - `simulation.locations`: station coordinate list (id + lat/lon)
 - Suggested default stations:
-  - `Copenhagen_H` (`55.6726`, `12.5646`)
+  - `Kobenhavn_H` (`55.6726`, `12.5646`)
+  - `Helsingor` (`56.0365`, `12.6136`)
+  - `CPH_Lufthavn` (`55.6280`, `12.6492`)
   - `Roskilde` (`55.6415`, `12.0803`)
   - `Ringsted` (`55.4427`, `11.7902`)
   - `Slagelse` (`55.4028`, `11.3546`)
-  - `Næstved` (`55.2299`, `11.7609`)
-  - `Nykøbing_F` (`54.7691`, `11.8746`)
+  - `Kalundborg` (`55.6797`, `11.0886`)
+  - `Naestved` (`55.2299`, `11.7609`)
+  - `Nykobing_F` (`54.7691`, `11.8746`)
+  - `Odense` (`55.4038`, `10.4024`) (optional extension)
 - `simulation.routes`: adjacency or ordered route definitions connecting station IDs.
+- Recommended route IDs:
+  - `zealand_north`: `Kobenhavn_H -> Helsingor`
+  - `zealand_west`: `Kobenhavn_H -> Roskilde -> Kalundborg`
+  - `zealand_airport`: `Kobenhavn_H -> CPH_Lufthavn`
+  - `zealand_south`: `Kobenhavn_H -> Roskilde -> Ringsted -> Naestved -> Nykobing_F`
+  - `zealand_bridge_extension` (optional): `Ringsted -> Odense`
 
 ### Thresholds and limits
 - `simulation.target_trips`: required number of trips `x`. Default: `24`
@@ -145,6 +198,8 @@ All runtime parameters should be stored in `config.yaml` and loaded through `sim
 - `simulation.min_route_nodes`: minimum stations in a route. Default: `2`
 - `simulation.closure_required`: enforce return to start station. Default: `true`
 - `simulation.max_closure_attempts`: retries for fallback return path. Default: `3`
+- `simulation.require_bidirectional_edges`: each route edge must be reversible. Default: `true`
+- `simulation.allow_optional_extension`: allow entering optional bridge route (`Odense`). Default: `false`
 
 ### Timing parameters
 - `simulation.timestep_s`: seconds per simulation tick. Default: `5`
@@ -200,6 +255,7 @@ All runtime parameters should be stored in `config.yaml` and loaded through `sim
 
 - Should command handling support multiple simultaneous operators now, or keep a strict single-operator scope for MVP?
 - Should route definitions be stored as ordered line paths, graph adjacency, or both?
+- Should the `Odense` extension be enabled in MVP runs, or reserved for phase 2?
 - Is `target_trips` fixed per run command, or can it be changed during a paused run?
 - Should lifecycle failures terminate immediately, or allow recovery/retry from last valid station?
 - Which station subset is mandatory for MVP (minimum route set on Zealand)?
